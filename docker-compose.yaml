@@ -1,0 +1,22 @@
+version: '3'
+services:
+  drinks_database:
+    image: postgres:11
+    ports:
+    - 5555:5432
+    environment:
+      - POSTGRES_USER=drinks_user
+      - POSTGRES_PASSWORD=drinks_password
+      - POSTGRES_DB=drinks_db
+  web:
+    build: .
+    ports:
+    - 8080:8080
+    depends_on:
+      - drinks_database
+    environment:
+      - DB_HOST="${DB_HOST}"
+      - DB_NAME="${DB_NAME}"
+      - DB_USER="${DB_USER}"
+      - DB_PASSWORD="${DB_PASSWORD}"
+      - DB_PORT="${DB_PORT}"
