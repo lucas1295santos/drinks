@@ -3,11 +3,11 @@ services:
   drinks_database:
     image: postgres:11
     ports:
-    - 5555:5432
+    - 5555:"${DB_PORT}"
     environment:
-      - POSTGRES_USER=drinks_user
-      - POSTGRES_PASSWORD=drinks_password
-      - POSTGRES_DB=drinks_db
+      - POSTGRES_USER="${POSTGRES_USER}"
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+      - POSTGRES_DB=${POSTGRES_DB}"
   web:
     build: .
     ports:
