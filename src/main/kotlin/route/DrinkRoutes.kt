@@ -6,11 +6,19 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
+import service.DrinkService
 import service.DrinkServiceDB
+
+fun Route.getDrinkService(): DrinkService {
+    val drinkService by di().instance<DrinkServiceDB>()
+    return drinkService
+}
 
 fun Route.listOfDrinksRoute() {
     get("/drinks") {
-        val drinks = DrinkServiceDB().getAll()
+        val drinks = this@listOfDrinksRoute.getDrinkService().getAll()
         call.respond(drinks)
     }
 }
@@ -18,18 +26,18 @@ fun Route.listOfDrinksRoute() {
 fun Route.createDrinkRoute() {
     post("/drinks") {
         val drink = call.receive<Drink>()
-        DrinkServiceDB().create(drink) // TODO: Inject service dependency
+        this@createDrinkRoute.getDrinkService().create(drink)
         call.response.status(HttpStatusCode.Created)
     }
 }
 
-fun Route.getById() {
+fun Route.getByIdRoute() {
     get("/drinks/{id}") {
         val id = call.parameters["id"]?.toIntOrNull() ?: return@get call.respondText(
             "Missing or malformed ID",
             status = HttpStatusCode.BadRequest
         )
-        val drink = DrinkServiceDB().getById(id) ?: return@get call.respondText(
+        val drink = this@getByIdRoute.getDrinkService().getById(id) ?: return@get call.respondText(
             "No drink with id $id",
             status = HttpStatusCode.NotFound
         )
@@ -37,13 +45,13 @@ fun Route.getById() {
     }
 }
 
-fun Route.deleteById() {
+fun Route.deleteByIdRoute() {
     delete("/drinks/{id}") {
         val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respondText(
             "Missing or malformed ID",
             status = HttpStatusCode.BadRequest
         )
-        if (DrinkServiceDB().delete(id) == null) { // TODO("Do proper error handling")
+        if (this@deleteByIdRoute.getDrinkService().delete(id) == null) { // TODO("Do proper error handling")
             call.respondText(
                 "No drink with id $id",
                 status = HttpStatusCode.NotFound
@@ -58,14 +66,14 @@ fun Route.deleteById() {
 }
 
 // TODO: 17/07/21 Extract id error handling
-fun Route.updateById() {
+fun Route.updateByIdRoute() {
     put("/drinks/{id}") {
         val id = call.parameters["id"]?.toIntOrNull() ?: return@put call.respondText(
             "Missing or malformed ID",
             status = HttpStatusCode.BadRequest
         )
         val drink = call.receive<Drink>()
-        if (DrinkServiceDB().update(drink) == null) {
+        if (this@updateByIdRoute.getDrinkService().update(drink) == null) {
             call.respondText(
                 "No drink with id $id",
                 status = HttpStatusCode.NotFound
@@ -83,8 +91,8 @@ fun Application.registerDrinkRoutes() {
     routing {
         listOfDrinksRoute()
         createDrinkRoute()
-        getById()
-        deleteById()
-        updateById()
+        getByIdRoute()
+        deleteByIdRoute()
+        updateByIdRoute()
     }
 }

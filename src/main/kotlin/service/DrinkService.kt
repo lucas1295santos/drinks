@@ -3,6 +3,9 @@ package service
 import data.Drink
 import data.DrinkEntity
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.singleton
 
 interface DrinkService {
     suspend fun create(drink: Drink): Int
@@ -50,4 +53,8 @@ class DrinkServiceDB: DrinkService {
             return@transaction entity.toDrink()
         }
     }
+}
+
+fun DI.MainBuilder.bindServices(){
+    bind<DrinkServiceDB>() with singleton { DrinkServiceDB() }
 }

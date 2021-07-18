@@ -6,10 +6,11 @@ import io.ktor.features.*
 import io.ktor.jackson.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import route.registerDrinkRoutes
+import org.kodein.di.ktor.di
+import service.bindServices
 
 fun main() {
     val port = System.getenv("PORT").toIntOrNull() ?: 8080
@@ -31,5 +32,9 @@ fun Application.mainModule() {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
+    di {
+        bindServices()
+    }
+
     registerDrinkRoutes()
 }

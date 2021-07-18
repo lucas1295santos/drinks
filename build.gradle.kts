@@ -26,6 +26,8 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed:0.15.1")
     //postgres is the database used in the project
     implementation("org.postgresql:postgresql:42.2.5")
+    //kodein is a DI tool
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.0.0")
 
     testImplementation(kotlin("test"))
 }
