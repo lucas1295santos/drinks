@@ -1,7 +1,11 @@
-FROM openjdk:11
+FROM openjdk:11 as builder
 
 COPY . .
 
-RUN ./gradlew build -x test
+RUN ./gradlew shadowJar
 
-CMD ["./gradlew", "run"]
+FROM openjdk:11
+
+COPY --from=builder /build/libs/drinks-1.0-SNAPSHOT-all.jar ./drinks-web.jar
+
+CMD ["java", "-jar", "drinks-web.jar"]
